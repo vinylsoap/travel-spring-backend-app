@@ -28,15 +28,15 @@ public class AttractionController {
     }
 
     @GetMapping(path = "/attraction")
-    public List<AttractionEntity> getAttractions(@RequestParam double searchPointLongitude,
-                                                 @RequestParam double searchPointLatitude,
-                                                 @RequestParam(required = false, defaultValue = "5") double searchDistanceKm) {
-        return attractionRepository.findAttractionsWithinDistance(searchPointLongitude, searchPointLatitude, searchDistanceKm * 1000);
+    public List<RatingEntity> getAttractionRatings(@RequestParam double searchPointLongitude,
+                                                   @RequestParam double searchPointLatitude,
+                                                   @RequestParam(required = false, defaultValue = "5") double searchDistanceKm) {
+        return ratingRepository.findRatingsWithinDistance(searchPointLongitude, searchPointLatitude, searchDistanceKm * 1000);
     }
 
     @Transactional
     @PostMapping(path = "/attraction")
-    public AttractionEntity saveAttraction(@RequestBody AttractionRatingRequestDto ratingRequest) {
+    public AttractionEntity saveAttractionRating(@RequestBody AttractionRatingRequestDto ratingRequest) {
         Point location = GEOMETRY_FACTORY.createPoint(new Coordinate(ratingRequest.getAttractionLongitude(), ratingRequest.getAttractionLatitude()));
         AttractionEntity attraction = new AttractionEntity();
         attraction.setName(ratingRequest.getAttractionName());
