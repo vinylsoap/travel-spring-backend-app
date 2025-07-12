@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface AttractionRepository extends JpaRepository<AttractionEntity, UUID> {
-    @Query(value = "SELECT * FROM attraction WHERE ST_DWithin(location, ST_SetSRAD(ST_MakePoint(:longitude, :latitude), 4326), :distance)", nativeQuery = true)
+    @Query(value = "SELECT * FROM journeyhero_schema.attraction WHERE ST_DWithin(location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :distance, true)", nativeQuery = true)
     List<AttractionEntity> findAttractionsWithinDistance(
             @Param("longitude") double longitude,
             @Param("latitude") double latitude,

@@ -31,7 +31,7 @@ public class AttractionController {
     public List<AttractionEntity> getAttractions(@RequestParam double searchPointLongitude,
                                                  @RequestParam double searchPointLatitude,
                                                  @RequestParam(required = false, defaultValue = "5") double searchDistanceKm) {
-        return attractionRepository.findAttractionsWithinDistance(searchPointLongitude, searchPointLatitude, searchDistanceKm);
+        return attractionRepository.findAttractionsWithinDistance(searchPointLongitude, searchPointLatitude, searchDistanceKm * 1000);
     }
 
     @Transactional
