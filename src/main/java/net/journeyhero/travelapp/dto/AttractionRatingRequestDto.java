@@ -3,6 +3,7 @@ package net.journeyhero.travelapp.dto;
 import net.journeyhero.travelapp.entity.DisabilityType;
 import net.journeyhero.travelapp.entity.RatingLevel;
 
+
 public class AttractionRatingRequestDto {
     private String attractionName;
     private double attractionLongitude;

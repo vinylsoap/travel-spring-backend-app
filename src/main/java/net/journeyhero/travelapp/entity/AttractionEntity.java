@@ -1,6 +1,7 @@
 package net.journeyhero.travelapp.entity;
 
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Point;
 
 import java.util.UUID;
 
@@ -15,27 +16,8 @@ public class AttractionEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private double longitude;
-
-    @Column(nullable = false)
-    private double latitude;
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+    @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
+    private Point location;
 
     public String getName() {
         return name;
@@ -43,5 +25,13 @@ public class AttractionEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
     }
 }

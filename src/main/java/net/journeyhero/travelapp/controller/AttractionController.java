@@ -5,6 +5,9 @@ import net.journeyhero.travelapp.entity.AttractionEntity;
 import net.journeyhero.travelapp.entity.RatingEntity;
 import net.journeyhero.travelapp.repository.AttractionRepository;
 import net.journeyhero.travelapp.repository.RatingRepository;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api")
 public class AttractionController {
+    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+
     private final AttractionRepository attractionRepository;
     private final RatingRepository ratingRepository;
 
@@ -32,10 +37,10 @@ public class AttractionController {
     @Transactional
     @PostMapping(path = "/attraction")
     public AttractionEntity saveAttraction(@RequestBody AttractionRatingRequestDto ratingRequest) {
+        Point location = GEOMETRY_FACTORY.createPoint(new Coordinate(ratingRequest.getAttractionLongitude(), ratingRequest.getAttractionLatitude()));
         AttractionEntity attraction = new AttractionEntity();
         attraction.setName(ratingRequest.getAttractionName());
-        attraction.setLongitude(ratingRequest.getAttractionLongitude());
-        attraction.setLatitude(ratingRequest.getAttractionLatitude());
+        attraction.setLocation(location);
         attractionRepository.save(attraction);
 
         RatingEntity rating = new RatingEntity();
