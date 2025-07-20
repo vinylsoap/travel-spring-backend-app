@@ -9,10 +9,10 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -30,11 +30,13 @@ public class AttractionController {
     }
 
     @GetMapping(path = "/attraction")
-    public List<RatingEntity> getAttractionRatings(@RequestParam double searchPointLongitude,
+    public Page<RatingEntity> getAttractionRatings(@RequestParam double searchPointLongitude,
                                                    @RequestParam double searchPointLatitude,
-                                                   @RequestParam(required = false, defaultValue = "5") double searchDistanceKm) {
+                                                   @RequestParam(required = false, defaultValue = "5") double searchDistanceKm,
+                                                   @RequestParam(required = false, defaultValue = "0") int pageNumber,
+                                                   @RequestParam(required = false, defaultValue = "25") int pageSize) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(searchPointLongitude, searchPointLatitude));
-        return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000);
+        return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000, PageRequest.of(pageNumber, pageSize));
     }
 
     @Transactional
