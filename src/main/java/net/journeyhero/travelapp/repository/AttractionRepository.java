@@ -1,6 +1,7 @@
 package net.journeyhero.travelapp.repository;
 
 import net.journeyhero.travelapp.entity.AttractionEntity;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,10 +12,13 @@ import java.util.UUID;
 
 @Repository
 public interface AttractionRepository extends JpaRepository<AttractionEntity, UUID> {
-    @Query(value = "SELECT * FROM journeyhero_schema.attraction WHERE ST_DWithin(location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :distance, true)", nativeQuery = true)
+    @Query(value = """
+            SELECT a FROM AttractionEntity a
+            WHERE function('ST_DWithin', a.location, :point, :distance, true) = true
+            ORDER BY function('ST_Distance', a.location, :point) ASC
+            """)
     List<AttractionEntity> findAttractionsWithinDistance(
-            @Param("longitude") double longitude,
-            @Param("latitude") double latitude,
+            @Param("point") Point point,
             @Param("distance") double distance
     );
 }

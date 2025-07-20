@@ -8,6 +8,7 @@ import net.journeyhero.travelapp.repository.RatingRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api")
 public class AttractionController {
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+    public static final int SRID = 4326;
+    public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), SRID);
 
     private final AttractionRepository attractionRepository;
     private final RatingRepository ratingRepository;
@@ -31,7 +33,8 @@ public class AttractionController {
     public List<RatingEntity> getAttractionRatings(@RequestParam double searchPointLongitude,
                                                    @RequestParam double searchPointLatitude,
                                                    @RequestParam(required = false, defaultValue = "5") double searchDistanceKm) {
-        return ratingRepository.findRatingsWithinDistance(searchPointLongitude, searchPointLatitude, searchDistanceKm * 1000);
+        Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(searchPointLongitude, searchPointLatitude));
+        return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000);
     }
 
     @Transactional
