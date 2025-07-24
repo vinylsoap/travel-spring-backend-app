@@ -1,5 +1,6 @@
 package net.journeyhero.travelapp.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,8 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withIssuerLocation("https://dev-fei5o32deyyjp7oq.us.auth0.com/").build();
+    public JwtDecoder jwtDecoder(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri) {
+        return NimbusJwtDecoder.withIssuerLocation(issuerUri).build();
     }
 
     @Bean
@@ -24,7 +25,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.GET, "/api/attraction").permitAll()
                         .anyRequest().authenticated()
-
                 )
                 .oauth2ResourceServer(server -> {
                     server.jwt(jwt -> {
