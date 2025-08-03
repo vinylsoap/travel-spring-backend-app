@@ -19,9 +19,13 @@ public class RatingEntity {
     @Column(nullable = false)
     private RatingLevel ratingLevel;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false, name = "attraction_id")
     private AttractionEntity attraction;
+
+    public UUID getId() {
+        return id;
+    }
 
     public RatingLevel getRatingLevel() {
         return ratingLevel;

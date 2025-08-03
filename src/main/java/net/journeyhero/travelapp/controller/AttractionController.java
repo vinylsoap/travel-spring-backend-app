@@ -14,6 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
+
+@Transactional
 @RestController
 @RequestMapping(path = "/api")
 public class AttractionController {
@@ -39,7 +43,6 @@ public class AttractionController {
         return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000, PageRequest.of(pageNumber, pageSize));
     }
 
-    @Transactional
     @PostMapping(path = "/attraction")
     public AttractionEntity saveAttractionRating(@RequestBody AttractionRatingRequestDto ratingRequest) {
         Point location = GEOMETRY_FACTORY.createPoint(new Coordinate(ratingRequest.getAttractionLongitude(), ratingRequest.getAttractionLatitude()));
@@ -55,5 +58,25 @@ public class AttractionController {
         ratingRepository.save(rating);
 
         return attraction;
+    }
+
+    @PutMapping(path = "/attraction/{ratingId}")
+    public RatingEntity updateAttractionRating(@PathVariable UUID ratingId, @RequestBody AttractionRatingRequestDto request) {
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow();
+
+        rating.setRatingLevel(request.getRatingLevel());
+        rating.setDisabilityType(request.getDisabilityType());
+
+        AttractionEntity attraction = rating.getAttraction();
+        attraction.setName(request.getAttractionName());
+        Point newLocation = GEOMETRY_FACTORY.createPoint(new Coordinate(request.getAttractionLongitude(), request.getAttractionLatitude()));
+        attraction.setLocation(newLocation);
+
+        return ratingRepository.save(rating);
+    }
+
+    @DeleteMapping(path = "/attraction/{ratingId}")
+    public void deleteAttractionRating(@PathVariable UUID ratingId) {
+        ratingRepository.deleteById(ratingId);
     }
 }
