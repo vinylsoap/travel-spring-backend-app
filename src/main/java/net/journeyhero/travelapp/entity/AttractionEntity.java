@@ -1,17 +1,14 @@
 package net.journeyhero.travelapp.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.locationtech.jts.geom.Point;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "attraction")
-public class AttractionEntity {
+public class AttractionEntity extends AuditedEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    protected UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -19,9 +16,6 @@ public class AttractionEntity {
     @Column(columnDefinition = "geometry(Point,4326)", nullable = false)
     private Point location;
 
-    public UUID getId() {
-        return id;
-    }
 
     public String getName() {
         return name;

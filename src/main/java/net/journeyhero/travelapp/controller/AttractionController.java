@@ -11,6 +11,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,6 +78,13 @@ public class AttractionController {
 
     @DeleteMapping(path = "/attraction/{ratingId}")
     public void deleteAttractionRating(@PathVariable UUID ratingId) {
-        ratingRepository.deleteById(ratingId);
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow();
+
+        if (rating.getCreatedBy().equals(currentUserId)) {
+            ratingRepository.deleteById(ratingId);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }
