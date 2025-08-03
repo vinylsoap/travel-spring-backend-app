@@ -2,14 +2,9 @@ package net.journeyhero.travelapp.entity;
 
 import jakarta.persistence.*;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "rating")
-public class RatingEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    protected UUID id;
+public class RatingEntity extends AuditedEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -19,9 +14,10 @@ public class RatingEntity {
     @Column(nullable = false)
     private RatingLevel ratingLevel;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false, name = "attraction_id")
     private AttractionEntity attraction;
+
 
     public RatingLevel getRatingLevel() {
         return ratingLevel;

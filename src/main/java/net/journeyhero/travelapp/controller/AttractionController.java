@@ -11,9 +11,16 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
+
+@Transactional
 @RestController
 @RequestMapping(path = "/api")
 public class AttractionController {
@@ -39,7 +46,6 @@ public class AttractionController {
         return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000, PageRequest.of(pageNumber, pageSize));
     }
 
-    @Transactional
     @PostMapping(path = "/attraction")
     public AttractionEntity saveAttractionRating(@RequestBody AttractionRatingRequestDto ratingRequest) {
         Point location = GEOMETRY_FACTORY.createPoint(new Coordinate(ratingRequest.getAttractionLongitude(), ratingRequest.getAttractionLatitude()));
@@ -55,5 +61,32 @@ public class AttractionController {
         ratingRepository.save(rating);
 
         return attraction;
+    }
+
+    @PutMapping(path = "/attraction/{ratingId}")
+    public RatingEntity updateAttractionRating(@PathVariable UUID ratingId, @RequestBody AttractionRatingRequestDto request) {
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        rating.setRatingLevel(request.getRatingLevel());
+        rating.setDisabilityType(request.getDisabilityType());
+
+        AttractionEntity attraction = rating.getAttraction();
+        attraction.setName(request.getAttractionName());
+        Point newLocation = GEOMETRY_FACTORY.createPoint(new Coordinate(request.getAttractionLongitude(), request.getAttractionLatitude()));
+        attraction.setLocation(newLocation);
+
+        return ratingRepository.save(rating);
+    }
+
+    @DeleteMapping(path = "/attraction/{ratingId}")
+    public void deleteAttractionRating(@PathVariable UUID ratingId) {
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (rating.getCreatedBy().equals(currentUserId)) {
+            ratingRepository.deleteById(ratingId);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 }
