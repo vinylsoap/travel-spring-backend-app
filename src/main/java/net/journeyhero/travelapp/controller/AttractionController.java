@@ -11,9 +11,11 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -63,7 +65,7 @@ public class AttractionController {
 
     @PutMapping(path = "/attraction/{ratingId}")
     public RatingEntity updateAttractionRating(@PathVariable UUID ratingId, @RequestBody AttractionRatingRequestDto request) {
-        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow();
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         rating.setRatingLevel(request.getRatingLevel());
         rating.setDisabilityType(request.getDisabilityType());
@@ -79,12 +81,12 @@ public class AttractionController {
     @DeleteMapping(path = "/attraction/{ratingId}")
     public void deleteAttractionRating(@PathVariable UUID ratingId) {
         String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
-        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow();
+        RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (rating.getCreatedBy().equals(currentUserId)) {
             ratingRepository.deleteById(ratingId);
         } else {
-            throw new IllegalArgumentException();
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 }
