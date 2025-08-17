@@ -1,5 +1,7 @@
 package net.journeyhero.travelapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import net.journeyhero.travelapp.dto.AttractionRatingRequestDto;
 import net.journeyhero.travelapp.entity.AttractionEntity;
 import net.journeyhero.travelapp.entity.RatingEntity;
@@ -46,6 +48,7 @@ public class AttractionController {
         return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000, PageRequest.of(pageNumber, pageSize));
     }
 
+    @Operation(security = @SecurityRequirement(name = "Auth0"))
     @PostMapping(path = "/attraction")
     public AttractionEntity saveAttractionRating(@RequestBody AttractionRatingRequestDto ratingRequest) {
         Point location = GEOMETRY_FACTORY.createPoint(new Coordinate(ratingRequest.getAttractionLongitude(), ratingRequest.getAttractionLatitude()));
@@ -63,6 +66,7 @@ public class AttractionController {
         return attraction;
     }
 
+    @Operation(security = @SecurityRequirement(name = "Auth0"))
     @PutMapping(path = "/attraction/{ratingId}")
     public RatingEntity updateAttractionRating(@PathVariable UUID ratingId, @RequestBody AttractionRatingRequestDto request) {
         RatingEntity rating = ratingRepository.findById(ratingId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -78,6 +82,7 @@ public class AttractionController {
         return ratingRepository.save(rating);
     }
 
+    @Operation(security = @SecurityRequirement(name = "Auth0"))
     @DeleteMapping(path = "/attraction/{ratingId}")
     public void deleteAttractionRating(@PathVariable UUID ratingId) {
         String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
