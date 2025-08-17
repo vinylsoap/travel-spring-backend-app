@@ -1,12 +1,12 @@
 # Importing JDK and copying required files
 FROM openjdk:21-jdk AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src src
+COPY ../pom.xml .
+COPY ../src src
 
 # Copy Maven wrapper
-COPY mvnw .
-COPY .mvn .mvn
+COPY ../mvnw .
+COPY ../.mvn .mvn
 
 # Set execution permission for the Maven wrapper
 RUN chmod +x ./mvnw
