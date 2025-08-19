@@ -7,21 +7,12 @@ import java.util.UUID;
 
 
 public class AttractionRatingRequestDto {
-    private UUID ratingId;
 
     private String attractionName;
     private double attractionLongitude;
     private double attractionLatitude;
     private DisabilityType disabilityType;
     private RatingLevel ratingLevel;
-
-    public UUID getRatingId() {
-        return ratingId;
-    }
-
-    public void setRatingId(UUID ratingId) {
-        this.ratingId = ratingId;
-    }
 
     public String getAttractionName() {
         return attractionName;
