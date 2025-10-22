@@ -43,7 +43,7 @@ public class AttractionController {
                                                    @RequestParam double searchPointLatitude,
                                                    @RequestParam(required = false, defaultValue = "5") double searchDistanceKm,
                                                    @RequestParam(required = false, defaultValue = "0") int pageNumber,
-                                                   @RequestParam(required = false, defaultValue = "25") int pageSize) {
+                                                   @RequestParam(required = false, defaultValue = "100") int pageSize) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(searchPointLongitude, searchPointLatitude));
         return ratingRepository.findRatingsWithinDistance(point, searchDistanceKm * 1000, PageRequest.of(pageNumber, pageSize));
     }
